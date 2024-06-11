@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>typ_ - Realistic Typewriter Effect</title>
+    <meta name="description" content="A playful, realistic typewriter effect for your custom notes. Click the '@' to see some magic!">
+    <meta property="og:title" content="typ_ - Realistic Typewriter Effect">
+    <meta property="og:description" content="A playful, realistic typewriter effect for your custom notes. Click the '@' to see some magic!">
+    <meta property="og:image" content="your-image-url-here.png"> <!-- Replace with actual URL of your rendered image -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://your-website-url-here"> <!-- Replace with your actual URL -->
+
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .content {
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-wrap;
+            overflow: hidden;
+        }
+        .letter {
+            position: relative;
+            display: inline-block;
+            filter: blur(0.4px); /* Subtle blur effect */
+        }
+        .ink-spot {
+            position: absolute;
+            background: black;
+            border-radius: 50%;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .clickable {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        svg {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="content" id="content"></div>
+    <div class="clickable" onclick="clickHandler()">@</div>
+    <script>
+        // Function to get URL parameters
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Placeholder click handler function
+        function clickHandler() {
+            console.log("The @ symbol was clicked!");
+        }
+
+        // Text from URL parameter
+        const contentText = getQueryParam('text') || `I'm sure all of you have some obnoxious friend who has their answering machine sound like they are actually there; not answering the phone only to have you attempt to talk to their recording and make a fool of yourself.
+        I say take it one step further.
+        Make an answering machine message that sounds like the answering machine picked up before you could get to the phone. Basically, have the answering machine start, then make it sound like you just picked up the phone saying "hold on, wait for the machine to finish". Then when it finally does finish, go straight to the beep.
+        Wait, who the hell has a normal answering machine anyway?`;
+
+        const contentDiv = document.getElementById('content');
+
+        function createLetterElement(letter, lineNumber, totalLines) {
+            const span = document.createElement('span');
+            span.classList.add('letter');
+            span.textContent = letter;
+
+            // Apply random ink opacity
+            const baseOpacity = 0.7 + Math.random() * 0.3;
+            const gradientEffect = 1 - (lineNumber / totalLines) * 0.04; // Slight gradient effect
+            span.style.opacity = baseOpacity * gradientEffect;
+
+            // Apply random position within a small range
+            const offsetX = (Math.random() - 0.5) * 2; // -1 to 1
+            const offsetY = (Math.random() - 0.5) * 2; // -1 to 1
+            span.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+
+            // Add ink spots with random distribution
+            const inkSpotCount = Math.floor(Math.random() * 2); // 0 to 1 spots
+            for (let i = 0; i < inkSpotCount; i++) {
+                const spot = document.createElement('div');
+                spot.classList.add('ink-spot');
+                const size = Math.random() * 2 + 1; // 1 to 3 px
+                spot.style.width = `${size}px`;
+                spot.style.height = `${size}px`;
+                spot.style.left = `${Math.random() * 100}%`;
+                spot.style.top = `${Math.random() * 100}%`;
+                span.appendChild(spot);
+            }
+
+            return span;
+        }
+
+        function renderContent(text) {
+            const lines = text.split('\n');
+            const totalLines = lines.length;
+
+            lines.forEach((line, lineNumber) => {
+                for (const char of line) {
+                    const letterElement = createLetterElement(char, lineNumber, totalLines);
+                    contentDiv.appendChild(letterElement);
+                }
+                const br = document.createElement('br');
+                contentDiv.appendChild(br);
+            });
+        }
+
+        renderContent(contentText);
+    </script>
+</body>
+</html>
